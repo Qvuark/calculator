@@ -1,5 +1,4 @@
-#include "calculator.h"
-#include <iostream>
+#include "../source/calculator.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
