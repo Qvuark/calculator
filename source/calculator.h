@@ -8,12 +8,10 @@ class calculator : public QWidget
 {
     Q_OBJECT
 public:
-    calculator(QWidget *parent = nullptr);
+    explicit calculator(QWidget *parent = nullptr);
     ~calculator();
-
 private slots:
-    void handleButtonClick();
-
+    void digitPressed();
 private:
     Ui::calculator *ui;
 };
