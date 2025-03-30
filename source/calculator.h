@@ -10,10 +10,16 @@ class calculator : public QWidget
 public:
     explicit calculator(QWidget *parent = nullptr);
     ~calculator();
+
 private slots:
-    void digitPressed();
+    void handleDigitPress(const QString &digit);
+    void on_pushBtn_FloatingPoint_released();
+    void on_pushBtn_00_released();
+
 private:
     Ui::calculator *ui;
+    QString currentInput;  // Non-static member variable
+    void updateDisplay();
 };
 
 #endif // CALCULATOR_H
