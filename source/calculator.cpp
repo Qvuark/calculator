@@ -2,7 +2,11 @@
 #include "ui_calculator.h"
 #include <QPushButton>
 #include <QDebug>
+#include <QRegularExpression>
 
+double firstOperand, secondOperand;
+QString currentOperant;
+bool isEnteringSecondOperant = false;
 calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0")
 {
     ui->setupUi(this);
@@ -11,7 +15,11 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
             handleDigitPress(btn->text());
         });
     };
-
+    auto connectOperation = [this](QPushButton* btn) {
+        connect(btn, &QPushButton::released, [this, btn]() {
+            handleOperationPress(btn->text());
+        });
+    };
     connectDigit(ui->pushBtn_0);
     connectDigit(ui->pushBtn_1);
     connectDigit(ui->pushBtn_2);
@@ -22,6 +30,16 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
     connectDigit(ui->pushBtn_7);
     connectDigit(ui->pushBtn_8);
     connectDigit(ui->pushBtn_9);
+
+    connectOperation(ui->pushBtn_Add);
+    connectOperation(ui->pushBtn_Sub);
+    connectOperation(ui->pushBtn_Mult);
+    connectOperation(ui->pushBtn_Div);
+
+    ui->pushBtn_Add->setCheckable(true);
+    ui->pushBtn_Sub->setCheckable(true);
+    ui->pushBtn_Mult->setCheckable(true);
+    ui->pushBtn_Div->setCheckable(true);
 
     setStyleSheet("background-color: white;");
     updateDisplay();
@@ -37,6 +55,17 @@ void calculator::updateDisplay()
     ui->screen->setText(currentInput);
 }
 
+void calculator::handleOperationPress(const QString &sign)
+{
+    QChar lastChar = currentInput.back();
+    if (lastChar == '+' || lastChar == '-' ||
+        lastChar == '*' || lastChar == '/')
+    {
+        currentInput.chop(1);
+    }
+    currentInput+=sign;
+    updateDisplay();
+}
 void calculator::handleDigitPress(const QString &digit)
 {
     if(currentInput.length() >= 15) return;
@@ -50,18 +79,17 @@ void calculator::handleDigitPress(const QString &digit)
         if(currentInput == "0" && digit != "0") { currentInput.clear(); }
         else if(currentInput == "0" && digit == "0") {return;}
     }
-
     currentInput += digit;
     updateDisplay();
 }
 
 void calculator::on_pushBtn_FloatingPoint_released()
 {
-    if(currentInput.contains('.') || currentInput.length() >= 15) return;
-
+    /*if(currentInput.contains('.') || currentInput.length() >= 15) return;
+*/
     if(currentInput.isEmpty() || currentInput.endsWith("+") ||
-        currentInput.endsWith("-") || currentInput.endsWith("×") ||
-        currentInput.endsWith("÷")) {
+        currentInput.endsWith("-") || currentInput.endsWith("*") ||
+        currentInput.endsWith("/") || currentInput.endsWith(".")) {
         currentInput += "0.";
     }
     else {currentInput += ".";}
@@ -78,3 +106,33 @@ void calculator::on_pushBtn_00_released()
 
     updateDisplay();
 }
+
+void calculator::on_pushBtn_Equals_released()
+{
+    QStringList numbersParts = currentInput.split(QRegularExpression("[\\+\\-\\*/]"));
+    QStringList operationsParts = currentInput.split(QRegularExpression("[0-9\\.]"));
+    QVector<double> numbers;
+    for(const auto &number : numbersParts)
+    {
+        numbers.push_back(number.toDouble());
+    }
+    QVector<QString> operators;
+    for(const QString &operation : operationsParts)
+    {
+        QString op = operation.trimmed();
+        if(!op.isEmpty()) operators.push_back(op);
+    }
+    double result = numbers[0];
+    for(int i = 0; i<operators.size() && i<numbers.size()-1;i++)
+    {
+        QString op = operators[i];
+        double nextNumber = numbers[i+1];
+        if(op=="+") result+=nextNumber;
+        else if(op=="-") result-=nextNumber;
+        else if(op=="/") result/=nextNumber;
+        else if(op=="*") result*=nextNumber;
+    }
+    currentInput = QString::number(result);
+    updateDisplay();
+}
+

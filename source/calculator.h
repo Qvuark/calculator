@@ -13,12 +13,16 @@ public:
 
 private slots:
     void handleDigitPress(const QString &digit);
+    void handleOperationPress(const QString &digit);
     void on_pushBtn_FloatingPoint_released();
     void on_pushBtn_00_released();
 
+    void on_pushBtn_Equals_released();
+
 private:
     Ui::calculator *ui;
-    QString currentInput;  // Non-static member variable
+    QString currentInput;
+    QString currentOperant;
     void updateDisplay();
 };
 

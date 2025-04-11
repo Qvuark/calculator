@@ -162,7 +162,7 @@ QPushButton:pressed {
     <string>⌫</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushBtn_Division">
+  <widget class="QPushButton" name="pushBtn_Div">
    <property name="geometry">
     <rect>
      <x>263</x>
@@ -190,7 +190,7 @@ QPushButton:pressed {
 }</string>
    </property>
    <property name="text">
-    <string>÷</string>
+    <string>/</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushBtn_7">
@@ -280,7 +280,7 @@ QPushButton:pressed {
     <string>9</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushBtn_Multiplication">
+  <widget class="QPushButton" name="pushBtn_Mult">
    <property name="geometry">
     <rect>
      <x>263</x>
@@ -308,10 +308,10 @@ QPushButton:pressed {
 }</string>
    </property>
    <property name="text">
-    <string>x</string>
+    <string>*</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushBtn_Substraction">
+  <widget class="QPushButton" name="pushBtn_Sub">
    <property name="geometry">
     <rect>
      <x>263</x>
@@ -400,7 +400,7 @@ QPushButton:pressed {
     <string>4</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushBtn_Addition">
+  <widget class="QPushButton" name="pushBtn_Add">
    <property name="geometry">
     <rect>
      <x>263</x>
