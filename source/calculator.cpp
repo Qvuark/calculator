@@ -4,10 +4,7 @@
 #include <QDebug>
 #include <QRegularExpression>
 
-double firstOperand, secondOperand;
-QString currentOperant;
-bool isEnteringSecondOperant = false;
-calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0")
+calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0"), expressionBuffer("")
 {
     ui->setupUi(this);
     auto connectDigit = [this](QPushButton* btn) {
@@ -36,11 +33,6 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
     connectOperation(ui->pushBtn_Mult);
     connectOperation(ui->pushBtn_Div);
 
-    ui->pushBtn_Add->setCheckable(true);
-    ui->pushBtn_Sub->setCheckable(true);
-    ui->pushBtn_Mult->setCheckable(true);
-    ui->pushBtn_Div->setCheckable(true);
-
     setStyleSheet("background-color: white;");
     updateDisplay();
 }
@@ -52,7 +44,7 @@ calculator::~calculator()
 
 void calculator::updateDisplay()
 {
-    ui->screen->setText(currentInput);
+    ui->screen->setText(expressionBuffer + currentInput);
 }
 
 void calculator::handleOperationPress(const QString &sign)
@@ -63,7 +55,8 @@ void calculator::handleOperationPress(const QString &sign)
     {
         currentInput.chop(1);
     }
-    currentInput+=sign;
+    expressionBuffer = currentInput + sign;
+    currentInput = "";
     updateDisplay();
 }
 void calculator::handleDigitPress(const QString &digit)
@@ -109,8 +102,9 @@ void calculator::on_pushBtn_00_released()
 
 void calculator::on_pushBtn_Equals_released()
 {
-    QStringList numbersParts = currentInput.split(QRegularExpression("[\\+\\-\\*/]"));
-    QStringList operationsParts = currentInput.split(QRegularExpression("[0-9\\.]"));
+    expressionBuffer+=currentInput;
+    QStringList numbersParts = expressionBuffer.split(QRegularExpression("[\\+\\-\\*/]"));
+    QStringList operationsParts = expressionBuffer.split(QRegularExpression("[0-9\\.]"));
     QVector<double> numbers;
     for(const auto &number : numbersParts)
     {
@@ -132,7 +126,31 @@ void calculator::on_pushBtn_Equals_released()
         else if(op=="/") result/=nextNumber;
         else if(op=="*") result*=nextNumber;
     }
-    currentInput = QString::number(result);
+    expressionBuffer = QString::number(result);
+    currentInput = "";
+    updateDisplay();
+}
+
+void calculator::on_pushBtn_Backspace_released()
+{
+    if(currentInput != "0")
+    {
+        currentInput.chop(1);
+    }
+    updateDisplay();
+}
+void calculator::on_pushBtn_Clear_released()
+{
+    expressionBuffer = "";
+    currentInput = "0";
+    updateDisplay();
+}
+
+
+void calculator::on_pushBtn_Clear_Entry_released()
+{
+    if(expressionBuffer == "") { currentInput = "0"; }
+    else currentInput = "";
     updateDisplay();
 }
 

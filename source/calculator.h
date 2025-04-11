@@ -16,13 +16,17 @@ private slots:
     void handleOperationPress(const QString &digit);
     void on_pushBtn_FloatingPoint_released();
     void on_pushBtn_00_released();
-
+    void on_pushBtn_Backspace_released();
     void on_pushBtn_Equals_released();
+
+    void on_pushBtn_Clear_released();
+
+    void on_pushBtn_Clear_Entry_released();
 
 private:
     Ui::calculator *ui;
+    QString expressionBuffer;
     QString currentInput;
-    QString currentOperant;
     void updateDisplay();
 };
 
