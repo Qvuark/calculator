@@ -1,10 +1,13 @@
 #include "calculator.h"
+#include "command.h"
 #include "ui_calculator.h"
+
 #include <QPushButton>
 #include <QDebug>
 #include <QRegularExpression>
 
-calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0"), expressionBuffer("")
+
+calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0")
 {
     ui->setupUi(this);
     auto connectDigit = [this](QPushButton* btn) {
@@ -17,6 +20,7 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
             handleOperationPress(btn->text());
         });
     };
+
     connectDigit(ui->pushBtn_0);
     connectDigit(ui->pushBtn_1);
     connectDigit(ui->pushBtn_2);
@@ -42,11 +46,52 @@ calculator::~calculator()
     delete ui;
 }
 
-void calculator::updateDisplay()
+void calculator::executeCommand(std::unique_ptr<command> cmd)
 {
-    ui->screen->setText(expressionBuffer + currentInput);
+    // Выполняем команду
+    cmd -> execute();
+    // Кладём её в undoStack
+    undoStack.push_back(std::move(cmd));
+    // Очищаем redoStack, т.к. пошли новые действия
+    redoStack.clear();
 }
 
+void calculator::undoCommand()
+{
+    if(!undoStack.empty()) {
+        auto cmd = std::move(undoStack.back());
+        undoStack.pop_back();
+        // Вызываем метод undo
+        cmd -> undo();
+        // Перемещаем команду в redoStack
+        redoStack.push_back(std::move(cmd));
+    }
+}
+
+void calculator::redoCommand()
+{
+    if(!redoStack.empty()) {
+        auto cmd = std::move(redoStack.back());
+        redoStack.pop_back();
+        // Выполняем команду снова
+        cmd->execute();
+        // Возвращаем команду в undoStack
+        undoStack.push_back(std::move(cmd));
+    }
+}
+
+QString calculator::getCurrentInput() const
+{
+    return currentInput;
+}
+void calculator::setCurrentInput(const QString &input)
+{
+    currentInput = input;
+}
+void calculator::updateDisplay()
+{
+    ui->screen->setText(currentInput);
+}
 void calculator::handleOperationPress(const QString &sign)
 {
     QChar lastChar = currentInput.back();
@@ -78,8 +123,6 @@ void calculator::handleDigitPress(const QString &digit)
 
 void calculator::on_pushBtn_FloatingPoint_released()
 {
-    /*if(currentInput.contains('.') || currentInput.length() >= 15) return;
-*/
     if(currentInput.isEmpty() || currentInput.endsWith("+") ||
         currentInput.endsWith("-") || currentInput.endsWith("*") ||
         currentInput.endsWith("/") || currentInput.endsWith(".")) {
@@ -147,10 +190,20 @@ void calculator::on_pushBtn_Clear_released()
 }
 
 
-void calculator::on_pushBtn_Clear_Entry_released()
+void calculator::on_pushBtn_Undo_released()
 {
     if(expressionBuffer == "") { currentInput = "0"; }
     else currentInput = "";
     updateDisplay();
+}
+
+
+void calculator::on_pushBtn_Menu_released()
+{
+
+}
+void calculator::on_pushBtn_Redo_released()
+{
+
 }
 

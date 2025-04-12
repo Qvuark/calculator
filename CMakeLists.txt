@@ -7,34 +7,46 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 # Update UI file path to new location
-qt_wrap_ui(UI_HEADERS source/calculator.ui)  # <-- Changed path
+qt_wrap_ui(UI_H ui/calculator.ui)  # <-- Changed path
 
 include_directories(
-    source
+    src
+    commands
+    ui
+    main
     ${CMAKE_CURRENT_BINARY_DIR}  # For generated ui_calculator.h
 )
-
-set(SOURCE_SOURCES
-    source/calculator.cpp
+set(UI_H
+    ui/calculator.ui
+)
+set(SRC_CPP
+    src/calculator.cpp
+)
+set(SRC_H
+    src/calculator.h
 )
 
-set(SOURCE_HEADERS
-    source/calculator.h
+set(COMMANDS_H
+    commands/command.h
+    commands/digitshandling.cpp
+    commands/digitshandling.h
 )
-
 set(MAIN_SOURCES
     Main/main.cpp
 )
 
 add_executable(${PROJECT_NAME}
-    ${SOURCE_SOURCES}
-    ${SOURCE_HEADERS}
+    ${SRC_CPP}
+    ${SRC_H}
+    ${COMMANDS_H}
     ${MAIN_SOURCES}
-    ${UI_HEADERS}  # Include generated UI headers
+    ${UI_H}
 )
 
 target_link_libraries(${PROJECT_NAME} Qt6::Widgets)
 
 # Update source_group to include the UI file
-source_group("Source" FILES ${SOURCE_SOURCES} ${SOURCE_HEADERS} source/calculator.ui)
-source_group("Main" FILES ${MAIN_SOURCES})
+source_group("ui" FILES ${UI_H})
+source_group("src" FILES ${SRC_CPP} ${SRC_H})
+source_group("commands" FILES ${COMMANDS_H})
+source_group("main" FILES ${MAIN_SOURCES})
