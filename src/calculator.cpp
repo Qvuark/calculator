@@ -1,23 +1,20 @@
 #include "calculator.h"
-#include "command.h"
-#include "ui_calculator.h"
-
+#include "commandhandeling.h"
+#include "digitshandling.h"
+#include "equalbutton.h"
+#include "clearbutton.h"
+#include "backspacebutton.h"
 #include <QPushButton>
-#include <QDebug>
 #include <QRegularExpression>
 
 
-calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), currentInput("0")
+calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator), _currentInput("0")
 {
     ui->setupUi(this);
+
     auto connectDigit = [this](QPushButton* btn) {
         connect(btn, &QPushButton::released, [this, btn]() {
             handleDigitPress(btn->text());
-        });
-    };
-    auto connectOperation = [this](QPushButton* btn) {
-        connect(btn, &QPushButton::released, [this, btn]() {
-            handleOperationPress(btn->text());
         });
     };
 
@@ -31,6 +28,13 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
     connectDigit(ui->pushBtn_7);
     connectDigit(ui->pushBtn_8);
     connectDigit(ui->pushBtn_9);
+    connectDigit(ui->pushBtn_FloatingPoint);
+
+    auto connectOperation = [this](QPushButton* btn) {
+        connect(btn, &QPushButton::released, [this, btn]() {
+            handleOperationPress(btn->text());
+        });
+    };
 
     connectOperation(ui->pushBtn_Add);
     connectOperation(ui->pushBtn_Sub);
@@ -46,164 +50,87 @@ calculator::~calculator()
     delete ui;
 }
 
-void calculator::executeCommand(std::unique_ptr<command> cmd)
+void calculator::executeCommand(std::unique_ptr<Command> cmd)
 {
-    // Выполняем команду
-    cmd -> execute();
-    // Кладём её в undoStack
-    undoStack.push_back(std::move(cmd));
-    // Очищаем redoStack, т.к. пошли новые действия
-    redoStack.clear();
-}
+    cmd->execute();
 
+    if (undoStack.size() >= MAX_HISTORY_BUFFER)
+    {
+        undoStack.erase(undoStack.begin());
+    }
+
+    undoStack.push_back(std::move(cmd));
+
+    redoStack.clear();
+
+    qDebug() << "Command executed. Undo stack size:" << undoStack.size();
+
+    updateDisplay();
+}
 void calculator::undoCommand()
 {
-    if(!undoStack.empty()) {
+    if(!undoStack.empty())
+    {
         auto cmd = std::move(undoStack.back());
         undoStack.pop_back();
-        // Вызываем метод undo
-        cmd -> undo();
-        // Перемещаем команду в redoStack
+        cmd->undo();
         redoStack.push_back(std::move(cmd));
+        updateDisplay();
     }
 }
 
 void calculator::redoCommand()
 {
-    if(!redoStack.empty()) {
+    if(!redoStack.empty())
+    {
         auto cmd = std::move(redoStack.back());
         redoStack.pop_back();
-        // Выполняем команду снова
         cmd->execute();
-        // Возвращаем команду в undoStack
         undoStack.push_back(std::move(cmd));
+        updateDisplay();
     }
 }
 
-QString calculator::getCurrentInput() const
-{
-    return currentInput;
-}
-void calculator::setCurrentInput(const QString &input)
-{
-    currentInput = input;
-}
-void calculator::updateDisplay()
-{
-    ui->screen->setText(currentInput);
-}
-void calculator::handleOperationPress(const QString &sign)
-{
-    QChar lastChar = currentInput.back();
-    if (lastChar == '+' || lastChar == '-' ||
-        lastChar == '*' || lastChar == '/')
-    {
-        currentInput.chop(1);
-    }
-    expressionBuffer = currentInput + sign;
-    currentInput = "";
-    updateDisplay();
-}
 void calculator::handleDigitPress(const QString &digit)
 {
-    if(currentInput.length() >= 15) return;
-    if(currentInput.contains("."))
-    {
-        QStringList parts = currentInput.split(".");
-        if(parts.size() > 1 && parts[1].length() >= 10) return;
-    }
-    else
-    {
-        if(currentInput == "0" && digit != "0") { currentInput.clear(); }
-        else if(currentInput == "0" && digit == "0") {return;}
-    }
-    currentInput += digit;
-    updateDisplay();
+    executeCommand(std::make_unique<DigitCommand>(this, digit));
 }
-
-void calculator::on_pushBtn_FloatingPoint_released()
+void calculator::handleOperationPress(const QString &operation)
 {
-    if(currentInput.isEmpty() || currentInput.endsWith("+") ||
-        currentInput.endsWith("-") || currentInput.endsWith("*") ||
-        currentInput.endsWith("/") || currentInput.endsWith(".")) {
-        currentInput += "0.";
-    }
-    else {currentInput += ".";}
-
-    updateDisplay();
+    executeCommand(std::make_unique<OperationCommand>(this, operation));
 }
-
-void calculator::on_pushBtn_00_released()
-{
-    if(currentInput.length() >= 14) return;
-
-    if(currentInput == "0") {return;}
-    else { currentInput += "00";}
-
-    updateDisplay();
-}
-
 void calculator::on_pushBtn_Equals_released()
 {
-    expressionBuffer+=currentInput;
-    QStringList numbersParts = expressionBuffer.split(QRegularExpression("[\\+\\-\\*/]"));
-    QStringList operationsParts = expressionBuffer.split(QRegularExpression("[0-9\\.]"));
-    QVector<double> numbers;
-    for(const auto &number : numbersParts)
-    {
-        numbers.push_back(number.toDouble());
-    }
-    QVector<QString> operators;
-    for(const QString &operation : operationsParts)
-    {
-        QString op = operation.trimmed();
-        if(!op.isEmpty()) operators.push_back(op);
-    }
-    double result = numbers[0];
-    for(int i = 0; i<operators.size() && i<numbers.size()-1;i++)
-    {
-        QString op = operators[i];
-        double nextNumber = numbers[i+1];
-        if(op=="+") result+=nextNumber;
-        else if(op=="-") result-=nextNumber;
-        else if(op=="/") result/=nextNumber;
-        else if(op=="*") result*=nextNumber;
-    }
-    expressionBuffer = QString::number(result);
-    currentInput = "";
-    updateDisplay();
-}
-
-void calculator::on_pushBtn_Backspace_released()
-{
-    if(currentInput != "0")
-    {
-        currentInput.chop(1);
-    }
-    updateDisplay();
+    executeCommand(std::make_unique<EqualsCommand>(this));
 }
 void calculator::on_pushBtn_Clear_released()
 {
-    expressionBuffer = "";
-    currentInput = "0";
-    updateDisplay();
+    executeCommand(std::make_unique<ClearCommand>(this));
 }
-
-
+void calculator::on_pushBtn_Backspace_released()
+{
+    executeCommand(std::make_unique<BackspaceCommand>(this));
+}
 void calculator::on_pushBtn_Undo_released()
 {
-    if(expressionBuffer == "") { currentInput = "0"; }
-    else currentInput = "";
-    updateDisplay();
-}
-
-
-void calculator::on_pushBtn_Menu_released()
-{
-
+    undoCommand();
 }
 void calculator::on_pushBtn_Redo_released()
 {
-
+    redoCommand();
 }
 
+QString calculator::currentInput() const { return _currentInput; }
+
+QString calculator::expressionBuffer() const { return _expressionBuffer; }
+
+void calculator::setCurrentInput(const QString &input) { _currentInput = input; }
+
+void calculator::setExpressionBuffer(const QString &expression) { _expressionBuffer = expression; }
+
+void calculator::updateDisplay()
+{
+    QString display = _expressionBuffer;
+    if(!_currentInput.isEmpty()) { display += _currentInput; }
+    ui->screen->setText(display);
+}

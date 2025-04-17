@@ -1,16 +1,23 @@
 #include "digitshandling.h"
-#include "../src/calculator.h"
+#include "calculator.h"
 
-digitsHandling::digitsHandling(calculator *calc, const QString &digit) : _calc(calc), _digit(digit) {}
+DigitCommand::DigitCommand(calculator* calc, const QString& digit)
+    : _calc(calc), _digit(digit),
+    _prevInput(calc->currentInput()),
+    _prevExpression(calc->expressionBuffer()) {}
 
-void digitsHandling::execute()
+void DigitCommand::execute()
 {
-    _prevInput = _calc -> getCurrentInput();
-    _calc->updateDisplay();
+    QString current = _calc->currentInput();
+    _prevInput = current;
+    if(current == "0" && _digit != "0") current.clear();
+    if(current.contains('.') && _digit == ".") return;
+    current += _digit;
+    _calc->setCurrentInput(current);
 }
 
-void digitsHandling::undo()
+void DigitCommand::undo()
 {
     _calc->setCurrentInput(_prevInput);
-    _calc->updateDisplay();
+    _calc->setExpressionBuffer(_prevExpression);
 }

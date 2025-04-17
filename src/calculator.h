@@ -5,8 +5,7 @@
 #include <memory>
 #include <vector>
 #include "ui_calculator.h"
-
-class command;
+#include "command.h"
 
 class calculator : public QWidget
 {
@@ -15,35 +14,33 @@ public:
     explicit calculator(QWidget *parent = nullptr);
     ~calculator();
 
-    void executeCommand(std::unique_ptr<command> cmd);
+    QString currentInput() const;
+    QString expressionBuffer() const;
+    void setCurrentInput(const QString &input);
+    void setExpressionBuffer(const QString &expression);
+
+    void executeCommand(std::unique_ptr<Command> cmd);
     void undoCommand();
     void redoCommand();
 
-    QString getCurrentInput() const;
-    void setCurrentInput(const QString &input);
-    void addDigit(const QString &digit);
-    void updateDisplay();
-
 private slots:
     void handleDigitPress(const QString &digit);
-    void handleOperationPress(const QString &digit);
-    void on_pushBtn_FloatingPoint_released();
-    void on_pushBtn_00_released();
+    void handleOperationPress(const QString &operation);
     void on_pushBtn_Equals_released();
-
-    void on_pushBtn_Backspace_released();
     void on_pushBtn_Clear_released();
-    void on_pushBtn_Redo_released();
+    void on_pushBtn_Backspace_released();
     void on_pushBtn_Undo_released();
+    void on_pushBtn_Redo_released();
 
-    void on_pushBtn_Menu_released();
 private:
     Ui::calculator *ui;
-    QString currentInput;
-    QString expressionBuffer;
+    QString _currentInput;
+    QString _expressionBuffer;
+    std::vector<std::unique_ptr<Command>> undoStack;
+    std::vector<std::unique_ptr<Command>> redoStack;
+    const int MAX_HISTORY_BUFFER = 100;
 
-    std::vector<std::unique_ptr<command>> undoStack;
-    std::vector<std::unique_ptr<command>> redoStack;
+    void updateDisplay();
 };
 
 #endif // CALCULATOR_H
