@@ -26,15 +26,13 @@ public:
 private slots:
     void handleDigitPress(const QString &digit);
     void handleOperationPress(const QString &operation);
+    void handleFuncPress(const QString &func);
     void on_pushBtn_Equals_released();
     void on_pushBtn_Clear_released();
     void on_pushBtn_Backspace_released();
     void on_pushBtn_Undo_released();
     void on_pushBtn_Redo_released();
-
     void on_pushBtn_Menu_released();
-
-    void on_pushBtn_Menu1_released();
 
 private:
     Ui::calculator *ui;

@@ -4,6 +4,7 @@
 #include "equalbutton.h"
 #include "clearbutton.h"
 #include "backspacebutton.h"
+#include "functionshandeling.h"
 #include <QPushButton>
 #include <QRegularExpression>
 
@@ -25,12 +26,49 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
         }
     }
     const QStringList opTokens = {"+","-","*","/"};
-    for (auto *btn : buttons) {
+    for (auto *btn : buttons)
+    {
         QString txt = btn->text();
-        if (opTokens.contains(txt)) {
+        if (opTokens.contains(txt))
+        {
             connect(btn, &QPushButton::released, this, [this, btn]() {
                 handleOperationPress(btn->text());
             });
+        }
+    }
+    const QStringList fcTokens = {"√","^","ln","pi","e"};
+    for (auto *btn : buttons)
+    {
+        QString txt = btn->text();
+        if (opTokens.contains(txt))
+        {
+            connect(btn, &QPushButton::released, this, [this, btn]() {
+                handleFuncPress(btn->text());
+            });
+        }
+    }
+    for(auto *btn : buttons)
+    {
+        QString txt = btn->text();
+        if(txt.contains("="))
+        {
+            connect(btn, &QPushButton::released, this, &calculator::on_pushBtn_Equals_released);
+        }
+        else if(txt.contains("⌫"))
+        {
+            connect(btn, &QPushButton::released, this, &calculator::on_pushBtn_Backspace_released);
+        }
+        else if(txt.contains("C"))
+        {
+            connect(btn, &QPushButton::released, this, &calculator::on_pushBtn_Clear_released);
+        }
+        else if(txt.contains("REDO"))
+        {
+            connect(btn, &QPushButton::released, this, &calculator::on_pushBtn_Redo_released);
+        }
+        else if(txt.contains("UNDO"))
+        {
+            connect(btn, &QPushButton::released, this, &calculator::on_pushBtn_Undo_released);
         }
     }
 
@@ -93,6 +131,10 @@ void calculator::handleOperationPress(const QString &operation)
 {
     executeCommand(std::make_unique<OperationCommand>(this, operation));
 }
+void calculator::handleFuncPress(const QString &func)
+{
+    executeCommand(std::make_unique<FuncCommand>(this, func));
+}
 void calculator::on_pushBtn_Equals_released()
 {
     executeCommand(std::make_unique<EqualsCommand>(this));
@@ -135,10 +177,4 @@ void calculator::on_pushBtn_Menu_released()
     ui->stackedWidget->setCurrentIndex(idx == 0 ? 1 : 0);
 }
 
-
-void calculator::on_pushBtn_Menu1_released()
-{
-    int idx = ui->stackedWidget->currentIndex();
-    ui->stackedWidget->setCurrentIndex(idx == 0 ? 1 : 0);
-}
 

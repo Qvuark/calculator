@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
-    <height>477</height>
+    <width>357</width>
+    <height>478</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,38 +23,9 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page">
-    <widget class="QPushButton" name="pushBtn_Menu">
-     <property name="geometry">
-      <rect>
-       <x>18</x>
-       <y>4</y>
-       <width>55</width>
-       <height>55</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>16</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-   color: black;
-   border: 1px solid gray;
-}
-QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #dadbde, stop: 1 #f6f7fa);
-}</string>
-     </property>
-     <property name="text">
-      <string>≡</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushBtn_Div">
      <property name="geometry">
       <rect>
@@ -324,36 +295,6 @@ QPushButton:pressed {
      </property>
      <property name="text">
       <string>C</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="screen">
-     <property name="geometry">
-      <rect>
-       <x>18</x>
-       <y>4</y>
-       <width>341</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>16</pointsize>
-       <italic>false</italic>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  color: black;
-  qproperty-alignment: 'AlignVCenter | AlignRight';
-  border: 1px solid gray;
-}</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::Box</enum>
-     </property>
-     <property name="text">
-      <string>0</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushBtn_1">
@@ -708,29 +649,6 @@ QPushButton:pressed {
       <string>9</string>
      </property>
     </widget>
-    <zorder>pushBtn_Div</zorder>
-    <zorder>pushBtn_Mult</zorder>
-    <zorder>pushBtn_5</zorder>
-    <zorder>pushBtn_0</zorder>
-    <zorder>pushBtn_Backspace</zorder>
-    <zorder>pushBtn_2</zorder>
-    <zorder>pushBtn_Add</zorder>
-    <zorder>pushBtn_Equals</zorder>
-    <zorder>pushBtn_Clear</zorder>
-    <zorder>screen</zorder>
-    <zorder>pushBtn_1</zorder>
-    <zorder>pushBtn_3</zorder>
-    <zorder>pushBtn_Sub</zorder>
-    <zorder>pushBtn_6</zorder>
-    <zorder>pushBtn_Undo</zorder>
-    <zorder>pushBtn_FloatingPoint</zorder>
-    <zorder>pushBtn_Redo</zorder>
-    <zorder>pushBtn_4</zorder>
-    <zorder>pushBtn_8</zorder>
-    <zorder>pushBtn_00</zorder>
-    <zorder>pushBtn_7</zorder>
-    <zorder>pushBtn_9</zorder>
-    <zorder>pushBtn_Menu</zorder>
    </widget>
    <widget class="QWidget" name="page_2">
     <widget class="QPushButton" name="pushBtn_Backspace1">
@@ -1120,36 +1038,6 @@ QPushButton:pressed {
       <string>4</string>
      </property>
     </widget>
-    <widget class="QLabel" name="screen_2">
-     <property name="geometry">
-      <rect>
-       <x>18</x>
-       <y>4</y>
-       <width>341</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>16</pointsize>
-       <italic>false</italic>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  color: black;
-  qproperty-alignment: 'AlignVCenter | AlignRight';
-  border: 1px solid gray;
-}</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::Box</enum>
-     </property>
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushBtn_Equals1">
      <property name="geometry">
       <rect>
@@ -1386,37 +1274,6 @@ QPushButton:pressed {
       <string>2</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushBtn_Menu1">
-     <property name="geometry">
-      <rect>
-       <x>18</x>
-       <y>4</y>
-       <width>55</width>
-       <height>55</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>30</pointsize>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton {
-   color: black;
-   border: 1px solid gray;
-}
-QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #dadbde, stop: 1 #f6f7fa);
-}</string>
-     </property>
-     <property name="text">
-      <string>&lt;</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushBtn_pow">
      <property name="geometry">
       <rect>
@@ -1445,7 +1302,7 @@ QPushButton:pressed {
 }</string>
      </property>
      <property name="text">
-      <string>n^x</string>
+      <string>^</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushBtn_exp">
@@ -1569,38 +1426,69 @@ QPushButton:pressed {
 }</string>
      </property>
      <property name="text">
-      <string>√x</string>
+      <string>√</string>
      </property>
     </widget>
-    <zorder>pushBtn_Backspace1</zorder>
-    <zorder>pushBtn_Redo1</zorder>
-    <zorder>pushBtn_Clear1</zorder>
-    <zorder>pushBtn_Undo1</zorder>
-    <zorder>pushBtn_Div1</zorder>
-    <zorder>pushBtn_16</zorder>
-    <zorder>pushBtn_19</zorder>
-    <zorder>pushBtn_18</zorder>
-    <zorder>pushBtn_17</zorder>
-    <zorder>pushBtn_Mult1</zorder>
-    <zorder>pushBtn_Sub1</zorder>
-    <zorder>pushBtn_15</zorder>
-    <zorder>pushBtn_14</zorder>
-    <zorder>screen_2</zorder>
-    <zorder>pushBtn_Equals1</zorder>
-    <zorder>pushBtn_Add1</zorder>
-    <zorder>pushBtn_13</zorder>
-    <zorder>pushBtn_11</zorder>
-    <zorder>pushBtn_FloatingPoint1</zorder>
-    <zorder>pushBtn_100</zorder>
-    <zorder>pushBtn_10</zorder>
-    <zorder>pushBtn_12</zorder>
-    <zorder>pushBtn_pow</zorder>
-    <zorder>pushBtn_exp</zorder>
-    <zorder>pushBtn_natural_log</zorder>
-    <zorder>pushBtn_pi</zorder>
-    <zorder>pushBtn_sqrt</zorder>
-    <zorder>pushBtn_Menu1</zorder>
    </widget>
+  </widget>
+  <widget class="QLabel" name="screen">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>5</y>
+     <width>341</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>16</pointsize>
+     <italic>false</italic>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+  color: black;
+  qproperty-alignment: 'AlignVCenter | AlignRight';
+  border: 1px solid gray;
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Shape::Box</enum>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushBtn_Menu">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>5</y>
+     <width>55</width>
+     <height>55</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+   color: black;
+   border: 1px solid gray;
+}
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                      stop: 0 #dadbde, stop: 1 #f6f7fa);
+}</string>
+   </property>
+   <property name="text">
+    <string>≡</string>
+   </property>
   </widget>
  </widget>
  <resources/>

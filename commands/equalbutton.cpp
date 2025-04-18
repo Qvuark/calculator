@@ -11,7 +11,7 @@ void EqualsCommand::execute()
 {
     QString fullExpression = _prevExpression + _prevInput;
 
-    QRegularExpression re(R"(([+\-*/])|([0-9]+\.?[0-9]*))");
+    QRegularExpression re(R"((exp|ln|sqrt|pow|π)|(-?[0-9]+\.?[0-9]*)|([+\-*/\^]))");
     QRegularExpressionMatchIterator i = re.globalMatch(fullExpression);
 
     QVector<double> numbers;
@@ -23,9 +23,13 @@ void EqualsCommand::execute()
         QString token = match.captured(0);
 
         if(token.isEmpty()) continue;
-        if(token == "+" || token == "-" || token == "*" || token == "/")
+        if(token == "+" || token == "-" || token == "*" || token == "/" || token == "√" || token == "^" || token == "ln" || token == "e")
         {
             operations.push_back(token);
+        }
+        else if(token == "pi")
+        {
+            numbers.push_back(3.14);
         }
         else
         {
@@ -34,6 +38,7 @@ void EqualsCommand::execute()
             if(ok) numbers.push_back(num);
         }
     }
+
     if(numbers.size() > 0)
     {
         _result = numbers[0];
@@ -45,6 +50,10 @@ void EqualsCommand::execute()
             else if(operations[i] == "-") _result -= next;
             else if(operations[i] == "*") _result *= next;
             else if(operations[i] == "/" && next != 0.0) _result /= next;
+            else if(operations[i] == "√") _result = sqrt(_result);
+            else if(operations[i] == "^") _result = std::pow(_result, next);
+            else if(operations[i] == "ln") _result = std::log(_result);
+            else if(operations[i] == "e") _result = std::exp(_result);
             else qDebug() <<"U cant divide by zero, silly";
         }
 

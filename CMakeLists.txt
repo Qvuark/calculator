@@ -36,6 +36,8 @@ set(COMMANDS
     commands/equalbutton.cpp
     commands/backspacebutton.h
     commands/backspacebutton.cpp
+    commands/functionshandeling.h
+    commands/functionshandeling.cpp
 )
 set(MAIN_SOURCES
     Main/main.cpp
@@ -47,7 +49,6 @@ add_executable(
     ${COMMANDS}
     ${MAIN_SOURCES}
     ${UI_}
-
 )
 
 target_link_libraries(${PROJECT_NAME} Qt6::Widgets)
