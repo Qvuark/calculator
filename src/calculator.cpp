@@ -12,34 +12,28 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
 {
     ui->setupUi(this);
 
-    auto connectDigit = [this](QPushButton* btn) {
-        connect(btn, &QPushButton::released, [this, btn]() {
-            handleDigitPress(btn->text());
-        });
-    };
+    const QStringList digitTokens = {"0","1","2","3","4","5","6","7","8","9","00","."};
+    auto buttons = this->findChildren<QPushButton*>();
+    for (auto *btn : buttons)
+    {
+        QString txt = btn->text();
+        if (digitTokens.contains(txt))
+        {
+            connect(btn, &QPushButton::released, this, [this, btn]() {
+                handleDigitPress(btn->text());
+            });
+        }
+    }
+    const QStringList opTokens = {"+","-","*","/"};
+    for (auto *btn : buttons) {
+        QString txt = btn->text();
+        if (opTokens.contains(txt)) {
+            connect(btn, &QPushButton::released, this, [this, btn]() {
+                handleOperationPress(btn->text());
+            });
+        }
+    }
 
-    connectDigit(ui->pushBtn_0);
-    connectDigit(ui->pushBtn_1);
-    connectDigit(ui->pushBtn_2);
-    connectDigit(ui->pushBtn_3);
-    connectDigit(ui->pushBtn_4);
-    connectDigit(ui->pushBtn_5);
-    connectDigit(ui->pushBtn_6);
-    connectDigit(ui->pushBtn_7);
-    connectDigit(ui->pushBtn_8);
-    connectDigit(ui->pushBtn_9);
-    connectDigit(ui->pushBtn_FloatingPoint);
-
-    auto connectOperation = [this](QPushButton* btn) {
-        connect(btn, &QPushButton::released, [this, btn]() {
-            handleOperationPress(btn->text());
-        });
-    };
-
-    connectOperation(ui->pushBtn_Add);
-    connectOperation(ui->pushBtn_Sub);
-    connectOperation(ui->pushBtn_Mult);
-    connectOperation(ui->pushBtn_Div);
 
     setStyleSheet("background-color: white;");
     updateDisplay();
@@ -134,3 +128,17 @@ void calculator::updateDisplay()
     if(!_currentInput.isEmpty()) { display += _currentInput; }
     ui->screen->setText(display);
 }
+
+void calculator::on_pushBtn_Menu_released()
+{
+    int idx = ui->stackedWidget->currentIndex();
+    ui->stackedWidget->setCurrentIndex(idx == 0 ? 1 : 0);
+}
+
+
+void calculator::on_pushBtn_Menu1_released()
+{
+    int idx = ui->stackedWidget->currentIndex();
+    ui->stackedWidget->setCurrentIndex(idx == 0 ? 1 : 0);
+}
+

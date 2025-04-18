@@ -32,6 +32,10 @@ private slots:
     void on_pushBtn_Undo_released();
     void on_pushBtn_Redo_released();
 
+    void on_pushBtn_Menu_released();
+
+    void on_pushBtn_Menu1_released();
+
 private:
     Ui::calculator *ui;
     QString _currentInput;
