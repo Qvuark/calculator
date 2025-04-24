@@ -13,7 +13,7 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
 {
     ui->setupUi(this);
 
-    const QStringList digitTokens = {"0","1","2","3","4","5","6","7","8","9","00","."};
+    const QStringList digitTokens = {"0","1","2","3","4","5","6","7","8","9","00",".","pi","e"};
     auto buttons = this->findChildren<QPushButton*>();
     for (auto *btn : buttons)
     {
@@ -36,11 +36,11 @@ calculator::calculator(QWidget *parent) : QWidget(parent), ui(new Ui::calculator
             });
         }
     }
-    const QStringList fcTokens = {"√","^","ln","pi","e"};
+    const QStringList fcTokens = {"√","^","ln"};
     for (auto *btn : buttons)
     {
         QString txt = btn->text();
-        if (opTokens.contains(txt))
+        if (fcTokens.contains(txt))
         {
             connect(btn, &QPushButton::released, this, [this, btn]() {
                 handleFuncPress(btn->text());

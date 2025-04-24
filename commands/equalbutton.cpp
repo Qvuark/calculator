@@ -1,74 +1,103 @@
 #include "equalbutton.h"
 #include "calculator.h"
 #include <QRegularExpression>
+#include <QVector>
+#include <QString>
+#include <cmath>
 
 EqualsCommand::EqualsCommand(calculator* calc)
     : _calc(calc),
     _prevInput(calc->currentInput()),
-    _prevExpression(calc->expressionBuffer()) {}
+    _prevExpression(calc->expressionBuffer())
+{}
 
 void EqualsCommand::execute()
 {
-    QString fullExpression = _prevExpression + _prevInput;
-
-    QRegularExpression re(R"((exp|ln|sqrt|pow|π)|(-?[0-9]+\.?[0-9]*)|([+\-*/\^]))");
-    QRegularExpressionMatchIterator i = re.globalMatch(fullExpression);
+    QString expr = _prevExpression + _prevInput;
+    if (expr.isEmpty()) return;
+    {
+        QRegularExpression resq(R"(√(-?\d+(?:\.\d+)?))");
+        QRegularExpressionMatch m;
+        while ((m = resq.match(expr)).hasMatch())
+        {
+            double v = m.captured(1).toDouble();
+            expr.replace(m.capturedStart(), m.capturedLength(), QString::number(std::sqrt(v), 'g', 15));
+        }
+    }
+    {
+        QRegularExpression reln(R"(ln(-?\d+(?:\.\d+)?))");
+        QRegularExpressionMatch m;
+        while ((m = reln.match(expr)).hasMatch())
+        {
+            double v = m.captured(1).toDouble();
+            expr.replace(m.capturedStart(), m.capturedLength(), QString::number(std::log(v), 'g', 15));
+        }
+    }
+    QRegularExpression re(R"((\d+(?:\.\d+)?)|([+\-*/^()]))");
+    auto it = re.globalMatch(expr);
 
     QVector<double> numbers;
-    QVector<QString> operations;
-
-    while(i.hasNext())
+    QVector<QString> ops;
+    while (it.hasNext())
     {
-        QRegularExpressionMatch match = i.next();
-        QString token = match.captured(0);
-
-        if(token.isEmpty()) continue;
-        if(token == "+" || token == "-" || token == "*" || token == "/" || token == "√" || token == "^" || token == "ln" || token == "e")
-        {
-            operations.push_back(token);
-        }
-        else if(token == "pi")
-        {
-            numbers.push_back(3.14);
-        }
+        QString tok = it.next().captured(0);
+        bool isNum = false;
+        double val = tok.toDouble(&isNum);
+        if (isNum)
+            numbers.push_back(val);
         else
-        {
-            bool ok;
-            double num = token.toDouble(&ok);
-            if(ok) numbers.push_back(num);
-        }
+            ops.push_back(tok);
     }
 
-    if(numbers.size() > 0)
+    if (numbers.size() != ops.size() + 1)
     {
-        _result = numbers[0];
-        for(int i = 0; i < operations.size() && i < numbers.size()-1; i++)
-        {
-            double next = numbers[i+1];
-
-            if(operations[i] == "+") _result += next;
-            else if(operations[i] == "-") _result -= next;
-            else if(operations[i] == "*") _result *= next;
-            else if(operations[i] == "/" && next != 0.0) _result /= next;
-            else if(operations[i] == "√") _result = sqrt(_result);
-            else if(operations[i] == "^") _result = std::pow(_result, next);
-            else if(operations[i] == "ln") _result = std::log(_result);
-            else if(operations[i] == "e") _result = std::exp(_result);
-            else qDebug() <<"U cant divide by zero, silly";
-        }
-
-        QString resultStr = QString::number(_result, 'f', 2);
-        if(resultStr.endsWith(".00"))
-        {
-            resultStr.chop(3);
-        }
-        else if(resultStr.endsWith("0") && resultStr.contains('.'))
-        {
-            resultStr.chop(1);
-        }
-        _calc->setExpressionBuffer(resultStr);
-        _calc->setCurrentInput("");
+        qWarning() << "Parse error:" << "numbers=" << numbers.size() << "ops=" << ops.size();
+        return;
     }
+
+    const QVector<QVector<QString>> levels =
+    {
+        { "^"      },
+        { "*", "/" },
+        { "+", "-" }
+    };
+    for (auto &lvl : levels)
+    {
+        bool again;
+        do
+        {
+            again = false;
+            for (int i = 0; i < ops.size(); ++i)
+            {
+                const QString &op = ops[i];
+                if (lvl.contains(op))
+                {
+                    double a = numbers[i];
+                    double b = numbers[i+1];
+                    double r = 0.0;
+                    if      (op == "^") r = std::pow(a, b);
+                    else if (op == "*") r = a * b;
+                    else if (op == "/") r = b != 0.0 ? a/b : 0.0;
+                    else if (op == "+") r = a + b;
+                    else if (op == "-") r = a - b;
+
+                    numbers[i] = r;
+                    numbers.removeAt(i+1);
+                    ops.removeAt(i);
+                    again = true;
+                    break;
+                }
+            }
+        } while (again);
+    }
+
+    _result = numbers[0];
+    QString out = QString::number(_result, 'f', 2);
+    if (out.endsWith(".00")) out.chop(3);
+    else if (out.endsWith("0") && out.contains('.')) out.chop(1);
+
+    _calc->setExpressionBuffer(out);
+    _calc->setCurrentInput("");
 }
 
 void EqualsCommand::undo()

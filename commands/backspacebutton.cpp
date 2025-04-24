@@ -7,14 +7,17 @@ BackspaceCommand::BackspaceCommand(calculator* calc)
 
 void BackspaceCommand::execute()
 {
-    QString current = _prevInput;
-    if(current.length() > 1)
+    QString cur = _calc->currentInput();
+    QString expr = _calc->expressionBuffer();
+    if (!cur.isEmpty())
     {
-        _calc->setCurrentInput(current.chopped(1));
+        cur.chop(1);
+        _calc->setCurrentInput(cur);
     }
-    else
+    else if (!expr.isEmpty())
     {
-        _calc->setCurrentInput("0");
+        expr.chop(1);
+        _calc->setExpressionBuffer(expr);
     }
 }
 void BackspaceCommand::undo()
